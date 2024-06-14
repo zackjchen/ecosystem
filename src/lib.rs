@@ -1,2 +1,4 @@
-mod error;
-pub use error::*;
+#[test]
+fn test() {
+    println!("Hello, world!");
+}
