@@ -1,6 +1,8 @@
 use std::time::Duration;
 
 use axum::{routing::get, Router};
+use opentelemetry_otlp::WithExportConfig;
+use opentelemetry_sdk::{runtime, trace::Tracer};
 use tokio::{
     net::TcpListener,
     time::{sleep, Instant},
@@ -30,9 +32,13 @@ async fn main() -> anyhow::Result<()> {
         .pretty()
         .with_filter(LevelFilter::INFO);
 
+    let tracing = init_tracer()?;
+    let opentelemetry = tracing_opentelemetry::layer().with_tracer(tracing);
+
     tracing_subscriber::registry()
         .with(console)
         .with(file)
+        .with(opentelemetry)
         .init();
 
     let addr = "0.0.0.0:8080";
@@ -66,4 +72,17 @@ async fn loog_task() -> &'static str {
     let elapsed = start.elapsed().as_millis() as f64;
     warn!(app.task_duration = elapsed, "long task complete");
     "long task"
+}
+
+fn init_tracer() -> anyhow::Result<Tracer> {
+    let tracer = opentelemetry_otlp::new_pipeline()
+        .tracing()
+        .with_exporter(
+            opentelemetry_otlp::new_exporter()
+                .tonic()
+                .with_endpoint("http:://localhost:4317"),
+        )
+        .install_batch(runtime::Tokio)?;
+
+    Ok(tracer)
 }
