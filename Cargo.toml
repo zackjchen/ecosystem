@@ -20,7 +20,14 @@ tracing-subscriber = "0.3"
 serde ={ version = "1", features = ["derive"] }
 serde_json = "1.0.117"
 axum = { version = "0.7.5", features = ["http2", "query", "tracing"] }
-tokio = { version = "1.38.0", features = ["rt", "rt-multi-thread", "macros"] }
+tokio = { version = "1.38.0", features = ["rt", "rt-multi-thread", "macros", "fs"] }
 derive_builder = "0.20.0"
 chrono = "0.4.38"
 derive_more = "0.99.18"
+strum = { version = "0.26.2", features = ["derive"] }
+blake3 = "1.5.1"
+dashmap = "5.5.3"
+tokio-stream = "0.1.15"
+tokio-util = { version = "0.7.11", features = ["codec"] }
+futures = "0.3.30"
+console-subscriber = "0.3.0"
